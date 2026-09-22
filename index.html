@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Para Marelis 🌻✨</title>
+
+  <!-- Fuentes Elegantes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --gold-primary: #facc15;
+      --gold-light: #fef08a;
+      --gold-dark: #ca8a04;
+      --bg-dark: #030712;
+      --glass-bg: rgba(15, 23, 42, 0.95);
+      --glass-border: rgba(250, 204, 21, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body, html {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-dark);
+      color: #fff;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: radial-gradient(circle at 50% 50%, #0f172a 0%, #030712 100%);
+      pointer-events: none;
+    }
+
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      will-change: transform;
+    }
+
+    /* ==========================================
+       1. SOBRE INICIAL CON SELLO DE CERA 3D
+       ========================================== */
+    .envelope-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 1500;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(3, 7, 18, 0.98);
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+      perspective: 1000px;
+      padding: 20px;
+    }
+
+    .envelope-screen.opened {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .envelope-wrapper {
+      position: relative;
+      width: 310px;
+      height: 210px;
+      background: #1e293b;
+      border-radius: 16px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(250, 204, 21, 0.25);
+      border: 1px solid var(--glass-border);
+      perspective: 1000px;
+      cursor: pointer;
+      transform-style: preserve-3d;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 155px solid transparent;
+      border-right: 155px solid transparent;
+      border-top: 120px solid #334155;
+      transform-origin: top;
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 4;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+    }
+
+    .envelope-flap.open {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .envelope-body {
+      position: absolute;
+      inset: 0;
+      border-left: 155px solid #0f172a;
+      border-right: 155px solid #0f172a;
+      border-bottom: 110px solid #1e293b;
+      border-radius: 16px;
+      z-index: 3;
+    }
+
+    .wax-seal {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 72px;
+      height: 72px;
+      background: radial-gradient(circle, #fde047 0%, #ca8a04 70%, #854d0e 100%);
+      border-radius: 50%;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), inset 0 2px 4px rgba(255, 255, 255, 0.5), 0 0 25px rgba(250, 204, 21, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      z-index: 5;
+      cursor: pointer;
+      transition: transform 0.3s ease, opacity 0.4s ease;
+      animation: pulseSeal 2s infinite;
+    }
+
+    @keyframes pulseSeal {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 20px rgba(250, 204, 21, 0.5); }
+      50% { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 0 35px rgba(250, 204, 21, 0.8); }
+    }
+
+    .wax-seal-text {
+      margin-top: 35px;
+      font-family: 'Caveat', cursive;
+      font-size: 1.6rem;
+      color: var(--gold-primary);
+      text-align: center;
+      text-shadow: 0 0 12px rgba(250, 204, 21, 0.5);
+      animation: fadeInDown 1s ease;
+    }
+
+    /* ==========================================
+       2. VISTA PRINCIPAL & TARJETA
+       ========================================== */
+    .viewport {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      perspective: 1000px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
+    }
+
+    .viewport.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .title-banner {
+      text-align: center;
+      margin-bottom: 18px;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    .title-banner h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2.6rem, 8vw, 3.8rem);
+      background: linear-gradient(90deg, #fef08a, #facc15, #ffffff, #facc15, #fef08a);
+      background-size: 200% auto;
+      color: transparent;
+      -webkit-background-clip: text;
+      animation: shimmerText 4s linear infinite;
+      line-height: 1.1;
+      filter: drop-shadow(0 0 12px rgba(250, 204, 21, 0.4));
+    }
+
+    @keyframes shimmerText {
+      to { background-position: 200% center; }
+    }
+
+    .title-banner p {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      font-weight: 300;
+      letter-spacing: 1.5px;
+      margin-top: 6px;
+      text-transform: uppercase;
+    }
+
+    .card-container {
+      position: relative;
+      width: 100%;
+      max-width: 350px;
+      height: 450px;
+      border-radius: 28px;
+      padding: 2px;
+      background: linear-gradient(135deg, #fef08a, #ca8a04, #fde047);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(250, 204, 21, 0.25);
+      transition: transform 0.15s ease-out;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .card-body {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #0f172a;
+      border-radius: 26px;
+      overflow: hidden;
+    }
+
+    .scratch-indicator {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--glass-border);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      color: var(--gold-primary);
+      backdrop-filter: blur(6px);
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      font-weight: 600;
+    }
+
+    .card-secret {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      text-align: center;
+      z-index: 1;
+    }
+
+    .secret-icon {
+      font-size: 3.5rem;
+      margin-bottom: 12px;
+      animation: floatHeart 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.5));
+    }
+
+    @keyframes floatHeart {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-10px) scale(1.05); }
+    }
+
+    .secret-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.2rem;
+      color: var(--gold-primary);
+      margin-bottom: 8px;
+    }
+
+    .secret-msg {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+
+    .wax-seal-btn {
+      background: linear-gradient(135deg, #fde047 0%, #ca8a04 100%);
+      border: none;
+      color: #3a1a04;
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(234, 179, 8, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      animation: pulseBtn 2s infinite;
+    }
+
+    @keyframes pulseBtn {
+      0% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.6); }
+      70% { box-shadow: 0 0 0 16px rgba(250, 204, 21, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); }
+    }
+
+    .wax-seal-btn:active {
+      transform: scale(0.95);
+    }
+
+    #scratch-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      touch-action: none;
+      cursor: pointer;
+      transition: opacity 0.6s ease;
+    }
+
+    .music-player-card {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      padding: 8px 14px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+    }
+
+    .music-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--gold-primary);
+    }
+
+    .music-sub {
+      font-size: 0.65rem;
+      color: #94a3b8;
+      display: block;
+    }
+
+    .visualizer-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 14px;
+    }
+
+    .bar {
+      width: 3px;
+      background: var(--gold-primary);
+      border-radius: 2px;
+      height: 4px;
+    }
+
+    .playing .bar:nth-child(1) { animation: soundBar 0.6s infinite alternate ease-in-out; }
+    .playing .bar:nth-child(2) { animation: soundBar 0.8s infinite alternate ease-in-out 0.2s; }
+    .playing .bar:nth-child(3) { animation: soundBar 0.5s infinite alternate ease-in-out 0.4s; }
+
+    @keyframes soundBar {
+      0% { height: 3px; }
+      100% { height: 14px; }
+    }
+
+    /* ==========================================
+       3. MODAL DE CARTA Y POLAROID
+       ========================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 18, 0.96);
+      z-index: 2000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #modal-flower-box {
+      position: absolute;
+      inset: 0;
+      z-index: 2005;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .modal-box {
+      position: relative;
+      z-index: 2010;
+      background: #0f172a;
+      border: 1px solid var(--glass-border);
+      padding: 24px 20px;
+      border-radius: 24px;
+      max-width: 420px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(250, 204, 21, 0.15);
+      transform: scale(0.95) translate3d(0,0,0);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-backdrop.active .modal-box {
+      transform: scale(1) translate3d(0,0,0);
+    }
+
+    .polaroid-frame {
+      background: #fff;
+      padding: 8px 8px 20px 8px;
+      border-radius: 8px;
+      transform: rotate(-2deg);
+      margin: 12px auto 18px auto;
+      max-width: 180px;
+      text-align: center;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
+    }
+
+    .polaroid-frame:hover {
+      transform: rotate(0deg) scale(1.03);
+    }
+
+    .polaroid-img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: #1e293b;
+    }
+
+    .polaroid-caption {
+      font-family: 'Caveat', cursive;
+      color: #334155;
+      font-size: 1.15rem;
+      margin-top: 4px;
+      font-weight: 700;
+    }
+
+    .typewriter-text {
+      font-family: 'Caveat', cursive;
+      font-size: 1.45rem;
+      color: #f1f5f9;
+      line-height: 1.5;
+      text-align: left;
+      white-space: pre-line;
+    }
+
+    .typewriter-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.2em;
+      background-color: var(--gold-primary);
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: blink 0.7s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow"></div>
+
+  <!-- Audio MP3 Local -->
+  <audio id="bg-music" src="cancion.mp3" preload="auto" loop></audio>
+
+  <!-- Pantalla Inicial: Sobre Real con Sello de Cera 3D -->
+  <div id="envelopeScreen" class="envelope-screen">
+    <div class="envelope-wrapper" id="envelopeWrapper">
+      <div class="envelope-flap" id="envelopeFlap"></div>
+      <div class="envelope-body"></div>
+      <div class="wax-seal" id="waxSeal">🌻</div>
+    </div>
+    <div class="wax-seal-text">Toca el sello de cera para abrir tu regalo, Marelis ✉️✨</div>
+  </div>
+
+  <!-- Reproductor de Música UI -->
+  <div id="music-player" class="music-player-card">
+    <div class="visualizer-bars" id="visualizer">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <div>
+      <span class="music-title">Flores Amarillas ✨</span>
+      <span class="music-sub" id="music-status">Toca para reproducir</span>
+    </div>
+  </div>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <div class="viewport" id="mainViewport">
+    <div class="title-banner">
+      <h1>¡Para Marelis! 🌻✨</h1>
+      <p>Rasca la tarjeta dorada para ver tu mensaje 💛</p>
+    </div>
+
+    <div class="card-container" id="cardContainer">
+      <div class="card-body">
+        
+        <div id="scratchProgress" class="scratch-indicator">Progreso: <span>0%</span></div>
+
+        <div class="card-secret">
+          <div class="secret-icon">🌻💛✨</div>
+          <h2 class="secret-title">¡Un detalle especial!</h2>
+          <p class="secret-msg">
+            Un detalle sencillo para una persona extraordinaria. Las buenas personas siempre merecen cosas bonitas. 🌻✨
+          </p>
+          <button id="btn-open-modal" class="wax-seal-btn">✉️ Abrir tu carta especial</button>
+        </div>
+
+        <canvas id="scratch-canvas"></canvas>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="modal" class="modal-backdrop">
+    <div id="modal-flower-box"></div>
+
+    <div class="modal-box" id="modalBox">
+      <h2 style="color: var(--gold-primary); font-family: 'Dancing Script', cursive; font-size: 2.2rem; margin-bottom: 8px; text-align: center;">Para Marelis 🌻✨</h2>
+      
+      <div class="polaroid-frame">
+        <img src="https://images.unsplash.com/photo-1597848212624-a19eb35e2651?q=80&w=400&auto=format&fit=crop" alt="Flores Amarillas" class="polaroid-img">
+        <div class="polaroid-caption">Marelis: luz, fuerza y corazón. 🌻✨</div>
+      </div>
+
+      <div class="typewriter-text">
+        <span id="typewriter-content"></span><span id="typewriter-cursor" class="typewriter-cursor"></span>
+      </div>
+
+      <div style="text-align: center; margin-top: 24px; padding-bottom: 8px;">
+        <button id="btn-close-modal" class="wax-seal-btn">✨ Toca para cerrar 🌻</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================
+       1. AUDIO CON SINTETIZADOR WEB AUDIO API
+       ========================================== */
+    let audioCtx = null;
+    let lastAudioTime = 0;
+    let synthNotesInterval = null;
+
+    const bgMusic = document.getElementById('bg-music');
+    const musicPlayer = document.getElementById('music-player');
+    const musicStatus = document.getElementById('music-status');
+    let isPlaying = false;
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playMagicChime() {
+      if (!audioCtx) return;
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.08);
+        gain.gain.setValueAtTime(0.001, audioCtx.currentTime + idx * 0.08);
+        gain.gain.linearRampToValueAtTime(0.02, audioCtx.currentTime + idx * 0.08 + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + idx * 0.08 + 0.6);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + idx * 0.08);
+        osc.stop(audioCtx.currentTime + idx * 0.08 + 0.6);
+      });
+    }
+
+    function playSyntheticChimeNote() {
+      if (!audioCtx || !isPlaying) return;
+      const notes = [261.63, 329.63, 392.00, 440.00, 523.25, 659.25];
+      const freq = notes[Math.floor(Math.random() * notes.length)];
+      
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.015, audioCtx.currentTime + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 1.2);
+    }
+
+    function startMusicAutomatically() {
+      initAudioContext();
+      bgMusic.play().then(() => {
+        isPlaying = true;
+        musicPlayer.classList.add('playing');
+        musicStatus.textContent = 'Sonando 🎵';
+      }).catch(() => {
+        isPlaying = true;
+        musicPlayer.classList.add('playing');
+        musicStatus.textContent = 'Modo ambiente 🎵';
+        if (!synthNotesInterval) {
+          synthNotesInterval = setInterval(playSyntheticChimeNote, 800);
+        }
+      });
+    }
+
+    function toggleMusicManual() {
+      initAudioContext();
+      if (isPlaying) {
+        bgMusic.pause();
+        if (synthNotesInterval) {
+          clearInterval(synthNotesInterval);
+          synthNotesInterval = null;
+        }
+        isPlaying = false;
+        musicPlayer.classList.remove('playing');
+        musicStatus.textContent = 'Pausado';
+      } else {
+        startMusicAutomatically();
+      }
+    }
+
+    musicPlayer.addEventListener('click', toggleMusicManual);
+
+    function playScratchSound() {
+      const now = Date.now();
+      if (now - lastAudioTime < 70) return;
+      lastAudioTime = now;
+
+      if (!audioCtx) return;
+      const bufferSize = audioCtx.sampleRate * 0.02; 
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+
+      noise.connect(gain);
+      gain.connect(audioCtx.destination);
+      noise.start();
+    }
+
+    function playTypewriterKeySound() {
+      const now = Date.now();
+      if (now - lastAudioTime < 90) return;
+      lastAudioTime = now;
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(300 + Math.random() * 150, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.008, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.04);
+    }
+
+    /* ==========================================
+       2. FLORES FLOTANTES DE FONDO (CANVAS)
+       ========================================== */
+    const bgCanvas = document.getElementById('bg-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    let petals = [];
+
+    function resizeBgCanvas() {
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeBgCanvas);
+    resizeBgCanvas();
+
+    class Petal {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * bgCanvas.width;
+        this.y = -20;
+        this.size = Math.random() * 8 + 6;
+        this.speedY = Math.random() * 1.2 + 0.6;
+        this.speedX = Math.sin(Math.random() * Math.PI) * 0.8;
+        this.rotation = Math.random() * 360;
+        this.rotSpeed = (Math.random() - 0.5) * 2;
+        this.opacity = Math.random() * 0.6 + 0.3;
+      }
+      update() {
+        this.y += this.speedY;
+        this.x += Math.sin(this.y * 0.01) * 0.5 + this.speedX;
+        this.rotation += this.rotSpeed;
+        if (this.y > bgCanvas.height + 20) this.reset();
+      }
+      draw() {
+        bgCtx.save();
+        bgCtx.translate(this.x, this.y);
+        bgCtx.rotate((this.rotation * Math.PI) / 180);
+        bgCtx.globalAlpha = this.opacity;
+        bgCtx.fillStyle = '#facc15';
+        bgCtx.beginPath();
+        bgCtx.ellipse(0, 0, this.size, this.size / 2, 0, 0, Math.PI * 2);
+        bgCtx.fill();
+        bgCtx.restore();
+      }
+    }
+
+    for (let i = 0; i < 30; i++) {
+      const p = new Petal();
+      p.y = Math.random() * bgCanvas.height;
+      petals.push(p);
+    }
+
+    function animatePetals() {
+      bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+      petals.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animatePetals);
+    }
+    animatePetals();
+
+    /* ==========================================
+       3. INTERACCIÓN DEL SOBRE
+       ========================================== */
+    const envelopeWrapper = document.getElementById('envelopeWrapper');
+    const envelopeFlap = document.getElementById('envelopeFlap');
+    const envelopeScreen = document.getElementById('envelopeScreen');
+    const mainViewport = document.getElementById('mainViewport');
+
+    envelopeWrapper.addEventListener('click', () => {
+      initAudioContext();
+      playMagicChime();
+      envelopeFlap.classList.add('open');
+      
+      setTimeout(() => {
+        envelopeScreen.classList.add('opened');
+        mainViewport.classList.add('visible');
+        startMusicAutomatically();
+        initScratchCanvas();
+      }, 700);
+    });
+
+    /* ==========================================
+       4. TARJETA RASCA Y GANA
+       ========================================== */
+    const scratchCanvas = document.getElementById('scratch-canvas');
+    const scratchCtx = scratchCanvas.getContext('2d');
+    const scratchProgress = document.querySelector('#scratchProgress span');
+    let isDrawing = false;
+    let scratchedPercent = 0;
+
+    function initScratchCanvas() {
+      const rect = scratchCanvas.getBoundingClientRect();
+      scratchCanvas.width = rect.width;
+      scratchCanvas.height = rect.height;
+
+      scratchCtx.fillStyle = '#1e293b';
+      scratchCtx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
+
+      // Patrón dorado
+      scratchCtx.fillStyle = '#ca8a04';
+      for (let i = 0; i < scratchCanvas.width; i += 20) {
+        for (let j = 0; j < scratchCanvas.height; j += 20) {
+          if ((i + j) % 40 === 0) {
+            scratchCtx.fillRect(i, j, 20, 20);
+          }
+        }
+      }
+
+      scratchCtx.font = 'bold 1.3rem Poppins';
+      scratchCtx.fillStyle = '#fef08a';
+      scratchCtx.textAlign = 'center';
+      scratchCtx.fillText('✨ Rasca aquí ✨', scratchCanvas.width / 2, scratchCanvas.height / 2);
+    }
+
+    function scratch(x, y) {
+      scratchCtx.globalCompositeOperation = 'destination-out';
+      scratchCtx.beginPath();
+      scratchCtx.arc(x, y, 28, 0, Math.PI * 2);
+      scratchCtx.fill();
+      playScratchSound();
+      checkScratchPercentage();
+    }
+
+    function checkScratchPercentage() {
+      const imageData = scratchCtx.getImageData(0, 0, scratchCanvas.width, scratchCanvas.height);
+      const pixels = imageData.data;
+      let transparentPixels = 0;
+
+      for (let i = 3; i < pixels.length; i += 16) {
+        if (pixels[i] === 0) transparentPixels++;
+      }
+
+      scratchedPercent = Math.round((transparentPixels / (pixels.length / 16)) * 100);
+      scratchProgress.textContent = scratchedPercent + '%';
+
+      if (scratchedPercent > 45 && scratchCanvas.style.opacity !== '0') {
+        scratchCanvas.style.opacity = '0';
+        setTimeout(() => scratchCanvas.remove(), 600);
+      }
+    }
+
+    function getEventPos(e) {
+      const rect = scratchCanvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    scratchCanvas.addEventListener('mousedown', (e) => { isDrawing = true; const pos = getEventPos(e); scratch(pos.x, pos.y); });
+    scratchCanvas.addEventListener('mousemove', (e) => { if (isDrawing) { const pos = getEventPos(e); scratch(pos.x, pos.y); } });
+    window.addEventListener('mouseup', () => isDrawing = false);
+
+    scratchCanvas.addEventListener('touchstart', (e) => { isDrawing = true; const pos = getEventPos(e); scratch(pos.x, pos.y); });
+    scratchCanvas.addEventListener('touchmove', (e) => { if (isDrawing) { const pos = getEventPos(e); scratch(pos.x, pos.y); } });
+    window.addEventListener('touchend', () => isDrawing = false);
+
+    /* ==========================================
+       5. MODAL CARTA Y EFECTO MÁQUINA DE ESCRIBIR
+       ========================================== */
+    const modal = document.getElementById('modal');
+    const btnOpenModal = document.getElementById('btn-open-modal');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+    const typewriterContent = document.getElementById('typewriter-content');
+
+    // Opción 3: Poética y profunda
+    const fullMessageText = "Para Marelis:\n\nLas flores amarillas simbolizan luz, alegría y buenos deseos, tres cosas que le regalas al mundo solo con ser tú. Admiro profundamente la gran mujer, madre y amiga que eres.\n\nEl detalle quizás llega algo tarde, pero el aprecio es de todos los días. Espero que este rincón virtual te recuerde lo especial que eres. 🌻✨\n\nCon muchísimo cariño.";
+
+    let typeIdx = 0;
+    let typeTimer = null;
+
+    function startTypewriter() {
+      typewriterContent.textContent = "";
+      typeIdx = 0;
+
+      function type() {
+        if (typeIdx < fullMessageText.length) {
+          typewriterContent.textContent += fullMessageText.charAt(typeIdx);
+          typeIdx++;
+          playTypewriterKeySound();
+          typeTimer = setTimeout(type, 45);
+        }
+      }
+      type();
+    }
+
+    btnOpenModal.addEventListener('click', () => {
+      playMagicChime();
+      modal.classList.add('active');
+      startTypewriter();
+    });
+
+    btnCloseModal.addEventListener('click', () => {
+      modal.classList.remove('active');
+      if (typeTimer) clearTimeout(typeTimer);
+    });
+  </script>
+</body>
+</html>
